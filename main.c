@@ -6,8 +6,8 @@
 #define SERVER_PORT 50000
 #define SERVER_REPLY_SIZE 1000000
 #define QUIT_COMMANDE "QUIT"
-#define WANT_COMMANDE "WANT"
-#define NEED_COMMANDE "NEED"
+#define WANT_COMMANDE "WANT "
+#define NEED_COMMANDE "NEED "
 #define NOSUCHFILE "NOSUCHFILE"
 #define CLIENT_REQUEST_SIZE 210
 
@@ -63,7 +63,7 @@ int main(int argc , char *argv[])
         }
 
         puts(server_reply);
-        if(strstr(server_reply, NOSUCHFILE) != NULL)
+        if(strstr(server_reply, NOSUCHFILE) == NULL)
             continue;
         memset(server_reply, 0, sizeof(server_reply));
 
