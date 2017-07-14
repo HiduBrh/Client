@@ -9,12 +9,13 @@
 #define WANT_COMMANDE "WANT"
 #define NEED_COMMANDE "NEED"
 #define NOSUCHFILE "NOSUCHFILE"
+#define CLIENT_REQUEST_SIZE 210
 
 int main(int argc , char *argv[])
 {
     int sock;
     struct sockaddr_in server;
-    char criteres[200] , server_reply[SERVER_REPLY_SIZE], toSend[210];
+    char criteres[CLIENT_REQUEST_SIZE-10] , server_reply[SERVER_REPLY_SIZE], toSend[CLIENT_REQUEST_SIZE];
 
     sock = socket(AF_INET , SOCK_STREAM , 0);
     if (sock == -1)
