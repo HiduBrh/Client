@@ -15,7 +15,7 @@ int main(int argc , char *argv[])
 {
     int sock;
     struct sockaddr_in server;
-    char criteres[CLIENT_REQUEST_SIZE-10] , server_reply[SERVER_REPLY_SIZE], toSend[CLIENT_REQUEST_SIZE];
+    char criteres[CLIENT_REQUEST_SIZE-5] , server_reply[SERVER_REPLY_SIZE], toSend[CLIENT_REQUEST_SIZE];
 
     sock = socket(AF_INET , SOCK_STREAM , 0);
     if (sock == -1)
@@ -54,7 +54,6 @@ int main(int argc , char *argv[])
             puts("Send failed");
             return 1;
         }
-
         //Receive a reply from the server
         if( recv(sock , server_reply , SERVER_REPLY_SIZE , 0) < 0)
         {
@@ -63,9 +62,11 @@ int main(int argc , char *argv[])
         }
 
         puts(server_reply);
-        if(strstr(server_reply, NOSUCHFILE) == NULL)
+        if(strstr(server_reply, NOSUCHFILE) != NULL)
             continue;
         memset(server_reply, 0, sizeof(server_reply));
+        memset(toSend, 0, sizeof(toSend));
+        memset(criteres, 0, sizeof(criteres));
 
         printf("saisissez l'id du fichier a recuperer : ");
         scanf("%s" , criteres);
