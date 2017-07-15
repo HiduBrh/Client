@@ -17,6 +17,7 @@ int main(int argc , char *argv[])
     struct sockaddr_in server;
     char criteres[CLIENT_REQUEST_SIZE-5] , server_reply[SERVER_REPLY_SIZE], toSend[CLIENT_REQUEST_SIZE];
 
+    //creation de la socket
     sock = socket(AF_INET , SOCK_STREAM , 0);
     if (sock == -1)
     {
@@ -28,7 +29,7 @@ int main(int argc , char *argv[])
     server.sin_family = AF_INET;
     server.sin_port = htons(SERVER_PORT);
 
-    //Connect to remote server
+    //Connection au serveur master
     if (connect(sock , (struct sockaddr *)&server , sizeof(server)) < 0)
     {
         perror("connect failed. Error");
@@ -37,16 +38,17 @@ int main(int argc , char *argv[])
 
     puts("Connected\n");
 
-    //keep communicating with server
+    //communication avec le server master
     while(1)
     {
+        //recuperation des criteres de recherche
         printf("saisissez les criteres de recherche [C1,C2,C3] : ");
         scanf("%s" , criteres);
         if(strcmp(QUIT_COMMANDE, criteres)==0) {
             close(sock);
             return 0;
         }
-        //Send some data
+        //envoie des crietres au serveur master
         strncpy(toSend,WANT_COMMANDE,strlen(WANT_COMMANDE));
         strcat(toSend,criteres);
         if( send(sock , toSend , strlen(toSend) , 0) < 0)
@@ -54,7 +56,7 @@ int main(int argc , char *argv[])
             puts("Send failed");
             return 1;
         }
-        //Receive a reply from the server
+        //Reponse du serveur master
         if( recv(sock , server_reply , SERVER_REPLY_SIZE , 0) < 0)
         {
             puts("recv failed");
@@ -62,19 +64,20 @@ int main(int argc , char *argv[])
         }
 
         puts(server_reply);
+        //si aucun fichier trouve, retour a la saisie des criteres
         if(strstr(server_reply, NOSUCHFILE) != NULL)
             continue;
         memset(server_reply, 0, sizeof(server_reply));
         memset(toSend, 0, sizeof(toSend));
         memset(criteres, 0, sizeof(criteres));
-
+        //recuperation de l'id du fichier voulu
         printf("saisissez l'id du fichier a recuperer : ");
         scanf("%s" , criteres);
         if(strcmp(QUIT_COMMANDE, criteres)==0) {
             close(sock);
             return 0;
         }
-        //Send some data
+        //envoie de la requete au serveur
         strncpy(toSend,NEED_COMMANDE,strlen(NEED_COMMANDE));
         strcat(toSend,criteres);
         if( send(sock , toSend , strlen(toSend) , 0) < 0)
@@ -82,7 +85,7 @@ int main(int argc , char *argv[])
             puts("Send failed");
             return 1;
         }
-        //Receive a reply from the server
+        //Recuperation du contenu du fichier et l'afficher
         if( recv(sock , server_reply , SERVER_REPLY_SIZE , 0) < 0)
         {
             puts("recv failed");
